@@ -1,7 +1,9 @@
 'use client'
+import { Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React, { useEffect } from 'react'
+import { toast } from 'sonner'
 
 const InterviewCompleted = () => {
   const router  = useRouter()
@@ -11,7 +13,14 @@ setTimeout(() => {
   console.log('refreshed');
   
 }, 100);
+setTimeout(()=>{
+  toast(' redirecting to dashboard...')
+  
+},200)
+setTimeout(()=>{
 
+  router.replace('/dashboard')
+},400)
   },[])
   return (
     <div className='bg-white flex flex-col gap-5 justify-center items-center p-14'>

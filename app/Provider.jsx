@@ -3,36 +3,43 @@ import React, { useContext, useEffect } from 'react'
 import { supabase } from '../services/supabase-client'
 import { UserDetailContext } from '../context/UserDetailContext'
 import {FeedbackContext} from '../context/FeedbackContext'
+import { useRouter } from 'next/navigation';
+
 const Provider = ({ children }) => {
     const [user, setuser] = React.useState()
     const [feedbackCredentials, setFeedbackCredentials] = React.useState()
+    const router = useRouter();
+
     useEffect(() => {
-        createNewUser()
-    }, [])
+        const createNewUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                router.push('/login');
+                return;
+            }
 
-
-    const createNewUser = async () => {
-        supabase.auth.getUser().then(async ({ data: { user } }) => {
             let { data: Users, error } = await supabase
                 .from('Users')
                 .select("*")
-                .eq('email', user?.email)
+                .eq('email', user.email);
 
-            console.log(Users);
-
-            if (Users?.length == 0) {
+            if (Users?.length === 0) {
                 const { data, error } = await supabase.from('Users').insert([{
-                    name: user?.user_metadata?.name,
-                    email: user?.email,
-                    pictures: user?.user_metadata?.avatar_url || user?.user_metadata?.picture || user?.avatar_url,
-                }])
-                console.log(data);
-                setuser(data)
-                return
+                    name: user.user_metadata?.name,
+                    email: user.email,
+                    pictures: user.user_metadata?.avatar_url || user.user_metadata?.picture || user.avatar_url,
+                }]);
+                setuser(data);
+                return;
             }
-            setuser(Users[0])
-        })
-    }
+
+            setuser(Users[0]);
+        };
+
+        createNewUser();
+    }, [])
+
+
     return (
         <UserDetailContext.Provider value={{ user, setuser }}>
 <FeedbackContext.Provider value={{feedbackCredentials, setFeedbackCredentials}}>
