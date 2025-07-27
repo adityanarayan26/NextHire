@@ -1,6 +1,6 @@
 'use client'
 import React, { useContext, useEffect } from 'react'
-import { UseUser } from '@/app/provider'
+import { UseUser } from '@/app/Provider'
 import { supabase } from '@/services/supabase-client'
 import { Loader2 } from 'lucide-react'
 import moment from 'moment'

@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { UseUser } from '@/app/provider'
+import { UseUser } from '@/app/Provider'
 import Image from 'next/image';
 const WelcomeComponent = () => {
   const { user } = UseUser();
