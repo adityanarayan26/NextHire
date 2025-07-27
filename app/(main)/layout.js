@@ -1,5 +1,5 @@
 
-import DashboardProvider from './provider'
+import DashboardProvider from './Provider'
 import { Toaster } from "@/components/ui/sonner"
 
 const DashboardLayout = ({ children }) => {
