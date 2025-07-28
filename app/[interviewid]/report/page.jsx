@@ -2,24 +2,28 @@
 
 import { FeedbackContext } from '@/context/FeedbackContext';
 import { supabase } from '@/services/supabase-client';
+import { useParams } from 'next/navigation';
 
 import React, { use, useContext, useEffect } from 'react'
 
 const FeedbackPage = () => {
   const[feedbackList, setFeedbackList] = React.useState([]);
+  const {interviewid:INTERVIEW_ID}=useParams()
+
+  
 const {feedbackCredentials, setFeedbackCredentials}=useContext(FeedbackContext)
-feedbackCredentials&&console.log(feedbackCredentials);
+
 useEffect(() => {
-  if (feedbackCredentials?.length > 0) {
+  if (INTERVIEW_ID ) {
     getFeedbackList();
   }
-}, [feedbackCredentials]);
+}, [INTERVIEW_ID]);
 const getFeedbackList = async () => {
   try {
     const { data: InterviewFeedback, error } = await supabase
       .from('Interview-feedback')
       .select('*')
-      .eq('interviewId', feedbackCredentials)
+      .eq('interviewId', INTERVIEW_ID)
 
 
     if (error) {
@@ -38,20 +42,27 @@ const getFeedbackList = async () => {
     <div className="min-h-screen w-full p-6 bg-gray-50">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold text-center text-gray-800 my-12">
-          Interview Feedback
+          View Reports
         </h1>
 
         <div className="bg-white rounded-2xl shadow-md p-6 space-y-6">
-          {feedbackList.length === 0 ? (
+          {feedbackList.length == 0 ? (
             <p className="text-center text-gray-500 py-12 text-lg">
               No interview feedback available.
             </p>
           ) : (
             feedbackList.map((item, id) => (
               <div key={id} className="border border-gray-200 rounded-xl p-5 space-y-4 bg-gray-50 hover:shadow transition">
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                  <h2 className="text-lg font-semibold text-gray-800">👤 {item?.userName}</h2>
-                  <p className="text-sm text-gray-500">{item?.userEmail}</p>
+                <div className="flex flex-col justify-start items-start gap-x-1  ">
+                  <div>
+
+                  <h2 className="text-md font-medium text-emerald-400 capitalize">Candidate : </h2>
+                  </div>
+                  <div className='flex flex-col'>
+
+                  <p className='text-sm text-blue-500 capitalize'> {item?.userName}</p>
+                  <p className="text-xs text-gray-500">{item?.userEmail}</p>
+                  </div>
                 </div>
 
                 <div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ArrowRight, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useRouter } from "next/navigation";
+import FlipLink from "./text-effect-flipper";
 
 const Hero2 = () => {
 
@@ -38,12 +39,10 @@ const router = useRouter()
             Let our AI-powered voice agent conduct real-time interviews, analyze candidate responses, and deliver instant feedback and smart hiring recommendations—all automated.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
-            <button onClick={()=>router.push('/dashboard')} className="h-12 rounded-full bg-white px-8 text-base font-medium text-black hover:bg-white/90">
-              Start 
+            <button className="h-9 rounded-full bg-white px-5 text-base font-medium text-black hover:bg-white/90">
+           <FlipLink href="/dashboard">Start</FlipLink>  
             </button>
-            <button className="h-12 rounded-full border border-gray-600 px-8 text-base font-medium text-white hover:bg-white/10">
-              Watch Demo
-            </button>
+            
           </div>
 
           

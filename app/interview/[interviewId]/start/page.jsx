@@ -70,14 +70,15 @@ const startInterview = () => {
     }, []);
 
 
-    const StopInterviewMethod = () => {
+    const StopInterviewMethod = async() => {
         vapi.stop();
-        GenerateFeedback();
-
-        toast('Interview Stopping...');
-        setTimeout(() => {
-            toast('Redirecting...')
-        }, 100);
+        vapi.mute(); 
+       await GenerateFeedback();
+setActiveSpeaker(null)
+        toast('Interview ended!');
+window.location.reload();
+router.replace('/interview/' + InterviewID + '/completed')
+        
     };
     const startCall = () => {
         const questionList = interviewInfo?.InterviewData?.QuestionList
@@ -168,7 +169,7 @@ Key Guidelines:
                 .select()
             setloading(false)
             console.log(data);
-            router.replace('/interview/' + InterviewID + '/completed')
+            
 
         } catch (error) {
             console.log(error);

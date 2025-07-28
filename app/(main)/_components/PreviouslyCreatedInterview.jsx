@@ -1,29 +1,48 @@
 'use client'
+import { RiPagesLine } from "react-icons/ri";
+import { BsPersonSquare } from "react-icons/bs";
+import { BiTimer } from "react-icons/bi";
+
 import { UseUser } from '@/app/Provider'
 import { Button } from '@/components/ui/button'
 import { supabase } from '@/services/supabase-client'
-import { Video } from 'lucide-react'
+import { Book, ClipboardCopyIcon, SearchCodeIcon, Video } from 'lucide-react'
 import Link from 'next/link'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import moment from 'moment'
 import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 const PreviouslyCreatedInterview = () => {
   const { user } = UseUser()
+  const router = useRouter()
   const [interviews, setInterviews] = React.useState([])
-
+const[feedback,setfeedback]=useState([])
   useEffect(() => {
     GetInterviewList()
   }, [user])
 
   const GetInterviewList = async () => {
-    let { data: Interviews, error } = await supabase
+    //interview list
+    let { data: Interviews, err } = await supabase
       .from('Interviews')
       .select('*')
       .eq('UserEmail', user?.email)
       .order('id', { ascending: false })
       .limit(4)
+      console.log('Interviews',Interviews);
+      
     setInterviews(Interviews || [])
+
+    // feedback list 
+
+let { data: Interviewfeedback, error } = await supabase
+  .from('Interview-feedback')
+  .select('*')
+  console.log('Interviewfeedback',Interviewfeedback);
+  setfeedback(Interviewfeedback || [])
+
+          
   }
 
   const copyurl = async (url) => {
@@ -50,7 +69,8 @@ const PreviouslyCreatedInterview = () => {
           {interviews.map((interview, index) => (
             <div
               key={index}
-              className="relative flex flex-col  gap-4 p-6 bg-gray-50 rounded-xl border border-gray-200 shadow hover:bg-gray-100 transition duration-300 cursor-pointer"
+              
+              className="relative flex flex-col  gap-4 p-6 bg-gray-50 rounded-xl border border-gray-200 shadow hover:bg-gray-100 transition  duration-300 cursor-pointer"
             >
               {/* Date Pill */}
               
@@ -68,27 +88,31 @@ const PreviouslyCreatedInterview = () => {
 
 
               {/* Interview Details */}
-              <div className="flex-1 min-w-0">
+              <div className="flex items-start  justify-center flex-col min-w-0">
                 <div className="mb-1">
-                  <p className="text-sm font-semibold text-gray-700">
-                    Job Position:
-                    <span className="text-xs font-medium text-gray-600 ml-1">
+                  <p className="text-sm flex gap-x-1 justify-between items-center font-semibold text-gray-700">
+
+<div><BsPersonSquare size={16}/></div>
+ Job Position:
+                    <span className="text-sm text-blue-500 capitalize font-medium  ml-1">
                       {interview?.JobPosition}
                     </span>
                   </p>
                 </div>
                 <div className="mb-1">
-                  <p className="text-sm font-semibold text-gray-700">
-                    Job Description:
-                    <span className="text-xs font-medium text-gray-600 ml-1">
+                  <p className="text-sm flex gap-x-1 justify-between items-center font-semibold text-gray-700">
+                <div><RiPagesLine size={20}/></div>  
+  Job Description:
+                    <span className="text-sm text-blue-500 capitalize font-medium  ml-1">
                       {interview?.JobDescription}
                     </span>
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-700">
-                    Interview Duration:
-                    <span className="text-xs font-medium text-gray-800 ml-1">
+                  <p className="text-sm flex gap-x-1 justify-between items-center font-semibold text-gray-700">
+             <div><BiTimer size={23}/></div>     
+  Interview Duration:
+                    <span className="text-sm text-blue-500 capitalize font-medium  ml-1">
                       {interview?.InterviewDuration}
                     </span>
                   </p>
@@ -97,13 +121,22 @@ const PreviouslyCreatedInterview = () => {
 
 
               {/* Copy Button */}
-              <div className="flex flex-col items-end gap-y-2">
-                <Button size='sm' onClick={() => copyurl(interview?.InterviewID)}>
-                  Copy link
+              
+              <div className="flex  justify-between items-center gap-y-2">
+              <div className='size-full flex items-end'>
+                <h1 className='text-sm font-medium text-emerald-500'>Candidates {feedback?.filter((item)=>item?.interviewId == interview?.InterviewID).length}</h1>
+              </div>
+              <div className='flex flex-col items-end gap-2'>
+                <Button size='xs' className='px-2 flex items-center gap-x-1 py-1 capitalize' onClick={() => copyurl(interview?.InterviewID)}>
+                  <ClipboardCopyIcon size={20}/> Copy link
                 </Button>
-                <span className=" bg-primary/20 text-primary text-xs font-medium px-2 py-0.5 rounded-full">
-                {moment(interview?.createdAt).format('DD/MM/yyyy')}
+                <Button size='xs' className='px-2 flex items-center gap-x-1 py-1 bg-emerald-500 text-white capitalize' onClick={()=>router.replace(`${interview?.InterviewID}/report`)}>
+                <Book size={20}/>  view report
+                </Button>
+                <span className="text-xs text-gray-500">
+                {moment(interview?.createdAt).format('DD MMM yyyy')}
               </span>
+              </div>
               </div>
             </div>
           ))}

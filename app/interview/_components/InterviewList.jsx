@@ -1,18 +1,21 @@
 'use client'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { UseUser } from '@/app/Provider'
 import { supabase } from '@/services/supabase-client'
-import { Loader2 } from 'lucide-react'
+import { ArrowLeft, Loader2 } from 'lucide-react'
 import moment from 'moment'
 import { FeedbackContext } from '@/context/FeedbackContext'
 import { useRouter } from 'next/navigation'
+import { BsPersonSquare } from 'react-icons/bs'
+import { RiPagesLine } from 'react-icons/ri'
+import { BiTimer } from 'react-icons/bi'
 
 const InterviewList = () => {
   const { user } = UseUser()
   const router = useRouter()
   const [interviews, setInterviews] = React.useState([])
   const { setFeedbackCredentials } = useContext(FeedbackContext)
-
+const[feedback,setfeedback]=useState()
   useEffect(() => {
     user && GetInterviewList()
   }, [user])
@@ -23,6 +26,16 @@ const InterviewList = () => {
       .select('*')
       .eq('UserEmail', user?.email)
     setInterviews(Interviews || [])
+
+
+let { data: Interviewfeedback, err } = await supabase
+  .from('Interview-feedback')
+  .select('*')
+console.log('Interviewfeedback',Interviewfeedback)
+setfeedback(Interviewfeedback || [])
+
+
+          
   }
 
   return (
@@ -30,9 +43,9 @@ const InterviewList = () => {
       <h1 className="text-2xl md:text-3xl mb-6 font-semibold text-gray-800 text-center md:text-left">
         All Interview List
       </h1>
-
+<h2 onClick={()=>router.back()} className='flex items-center gap-x-1 text-md my-3 cursor-pointer '><ArrowLeft size={16}/> Back</h2>
       {interviews.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+        <div className="grid relative grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
           {interviews.map((interview, index) => (
             <div
               key={index}
@@ -57,19 +70,25 @@ const InterviewList = () => {
                 {/* Job Info */}
                 <div className="flex flex-col sm:flex-row gap-6 w-full">
                   <div>
-                    <p className="text-gray-500 text-sm font-medium">Position</p>
-                    <p className="text-gray-800 text-sm">{interview?.JobPosition}</p>
+                    <p className="text-gray-500 text-sm font-medium flex items-center
+                     gap-x-1"><BsPersonSquare size={16}/> Position</p>
+                    <p className="text-primary text-sm capitalize ">{interview?.JobPosition}</p>
                   </div>
                   <div>
-                    <p className="text-gray-500 text-sm font-medium">Description</p>
-                    <p className="text-gray-800 text-sm truncate max-w-xs">{interview?.JobDescription}</p>
+                    <p className="text-gray-500 text-sm font-medium flex items-center
+                     gap-x-1"><RiPagesLine size={20}/>Description</p>
+                    <p className="text-primary text-sm truncate max-w-xs  capitalize ">{interview?.JobDescription}</p>
                   </div>
                   <div>
-                    <p className="text-gray-500 text-sm font-medium">Duration</p>
-                    <p className="text-gray-800 text-sm">{interview?.InterviewDuration} min</p>
+                    <p className="text-gray-500 text-sm font-medium flex items-center
+                     gap-x-1"><BiTimer size={23}/>Duration</p>
+                    <p className="text-primary text-sm capitalize ">{interview?.InterviewDuration} min</p>
                   </div>
                 </div>
-
+<div className='absolute bottom-5 left-5'>
+  <h1 className='text-emerald-500 text-xs'>Candidates : {feedback?.filter((item)=>item?.interviewId == interview?.InterviewID
+  ).length}</h1>
+</div>
                 {/* Tags & Date */}
                 <div className="flex flex-col items-end justify-between gap-2 w-full sm:w-auto">
                   <div className="flex flex-wrap gap-2 mt-2 sm:mt-0">
