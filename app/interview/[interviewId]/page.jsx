@@ -3,8 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { InterviewContext } from '@/context/InterviewContext'
 import { supabase } from '@/services/supabase-client'
-import { ArrowRight, BookOpenTextIcon, Clock, Loader2 } from 'lucide-react'
-import Image from 'next/image'
+import { ArrowRight, BookOpenText, Clock, Loader2, User, Mail, AlertCircle, Sparkles } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
 import React, { useContext, useEffect, useState } from 'react'
 
@@ -13,19 +12,15 @@ const Interview = () => {
   const [interviewData, setInterviewData] = React.useState()
   const [field, setField] = React.useState('')
   const [Useremail, setUserEmail] = React.useState('')
-  const {interviewInfo, setInterviewInfo} = useContext(InterviewContext)
+  const { interviewInfo, setInterviewInfo } = useContext(InterviewContext)
   const router = useRouter()
-
   const [loading, setloading] = useState(false)
-
-
 
   useEffect(() => {
     if (interviewId) {
       GetInterviewDetail();
     }
   }, [interviewId])
-
 
   const GetInterviewDetail = async () => {
     setloading(true)
@@ -39,12 +34,9 @@ const Interview = () => {
       setloading(false)
     } else {
       setInterviewData(Interviews[0])
-
       setloading(false)
-
     }
   }
-
 
   const JoinInterview = async () => {
     let { data: Interviews, error } = await supabase
@@ -52,68 +44,119 @@ const Interview = () => {
       .select("*")
       .eq('InterviewID', interviewId);
 
-
-      
-setInterviewInfo({'Username': field,
-  "UserEmail":Useremail,
-'InterviewData': Interviews[0],
-})
-
-
-    router.push(interviewId+'/start')
-
-
+    setInterviewInfo({
+      'Username': field,
+      "UserEmail": Useremail,
+      'InterviewData': Interviews[0],
+    })
+    router.push(interviewId + '/start')
   }
+
   return (
-    <div className='w-full relative  flex flex-col  items-center justify-center'>
-      <div className='absolute top-5 right-5'>
-
-        <Button onClick={JoinInterview} className='my-2 mb-4 cursor-pointer flex items-center gap-x-1 ' disabled={!field?.trim()} >
-          Join Interview <ArrowRight size={15} />
-        </Button>
-      </div>
-      <Image src={'/interview.png'} height={350} width={350} alt='interviewimage' />
-
-      {loading ? (
-        <div>
-          <h1 className='text-lg font-semibold flex items-center gap-x-2'><Loader2 className='animate-spin ' size={15} /> Loading Interview Details...</h1>
+    <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-6">
+      <div className="w-full max-w-lg">
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <img src="/logo.svg" alt="NextHire" className="h-10 mx-auto mb-4" />
+          <p className="text-[#64748b]">AI-Powered Interview Experience</p>
         </div>
-      ) : (<div className='mt-3 flex flex-col items-center justify-center'>
-        <h1 className='capitalize text-lg font-medium mb-2'>{interviewData?.JobPosition}</h1>
-        <div className='flex gap-x-4'>
-          <h2 className='border p-1 text-sm bg-gray-200  px-2 rounded-xl flex items-center gap-x-1'> <Clock size={15} /> {interviewData?.InterviewDuration}</h2>
-          <h2 className='border p-1 text-sm bg-gray-200  px-2 rounded-xl flex items-center gap-x-2'><BookOpenTextIcon size={15} />
-            {Array.isArray(interviewData?.InterviewType)
-              ? interviewData.InterviewType.join(', ')
-              : (() => {
-                try {
-                  const parsed = JSON.parse(interviewData?.InterviewType || 'null');
-                  return Array.isArray(parsed) ? parsed.join(', ') : parsed;
-                } catch {
-                  return interviewData?.InterviewType;
-                }
-              })()}
-          </h2>
+
+        {/* Main Card */}
+        <div className="pro-card p-8">
+          {loading ? (
+            <div className="flex flex-col items-center py-8">
+              <Loader2 className="w-8 h-8 animate-spin text-[#4945d1] mb-4" />
+              <p className="text-[#64748b]">Loading interview details...</p>
+            </div>
+          ) : (
+            <>
+              {/* Interview Details */}
+              {interviewData && (
+                <div className="bg-[#f8fafc] rounded-2xl p-5 mb-6 border border-[#e2e8f0]">
+                  <h2 className="text-lg font-semibold capitalize text-center text-[#0f172a] mb-3">
+                    {interviewData?.JobPosition}
+                  </h2>
+                  <div className="flex flex-wrap justify-center gap-3">
+                    <span className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-[#e2e8f0] text-sm text-[#64748b]">
+                      <Clock className="w-4 h-4 text-[#4945d1]" />
+                      {interviewData?.InterviewDuration}
+                    </span>
+                    <span className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-[#e2e8f0] text-sm text-[#64748b]">
+                      <BookOpenText className="w-4 h-4 text-[#4945d1]" />
+                      {Array.isArray(interviewData?.InterviewType)
+                        ? interviewData.InterviewType.join(', ')
+                        : (() => {
+                          try {
+                            const parsed = JSON.parse(interviewData?.InterviewType || 'null');
+                            return Array.isArray(parsed) ? parsed.join(', ') : parsed;
+                          } catch {
+                            return interviewData?.InterviewType;
+                          }
+                        })()}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Form */}
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-medium text-[#0f172a] mb-2">
+                    <User className="w-4 h-4 text-[#4945d1]" />
+                    Your Name
+                  </label>
+                  <Input
+                    placeholder="e.g. John Doe"
+                    className="h-12 bg-white border-[#e2e8f0] focus:border-[#4945d1] focus:ring-2 focus:ring-[#4945d1]/10 rounded-xl"
+                    onChange={(e) => setField(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-medium text-[#0f172a] mb-2">
+                    <Mail className="w-4 h-4 text-[#4945d1]" />
+                    Your Email
+                  </label>
+                  <Input
+                    placeholder="e.g. john@example.com"
+                    type="email"
+                    className="h-12 bg-white border-[#e2e8f0] focus:border-[#4945d1] focus:ring-2 focus:ring-[#4945d1]/10 rounded-xl"
+                    onChange={(e) => setUserEmail(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Info */}
+              <div className="bg-[#e8eaf6] border border-[#c7d2fe] rounded-xl p-4 mb-6">
+                <div className="flex gap-3">
+                  <AlertCircle className="w-5 h-5 text-[#4945d1] flex-shrink-0 mt-0.5" />
+                  <div className="text-sm">
+                    <p className="font-medium text-[#4945d1] mb-1">Before you start</p>
+                    <ul className="text-[#64748b] space-y-1">
+                      <li>• Ensure stable internet connection</li>
+                      <li>• Find a quiet environment</li>
+                      <li>• Allow microphone access</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Join Button */}
+              <Button
+                onClick={JoinInterview}
+                disabled={!field?.trim() || !Useremail?.trim()}
+                className="w-full h-14 text-lg font-semibold btn-primary gap-2 rounded-xl"
+              >
+                Join Interview
+                <ArrowRight className="w-5 h-5" />
+              </Button>
+            </>
+          )}
         </div>
-      </div>)}
-      <div className='mt-3 w-1/2 pt-3  rounded-2xl'>
-        <label htmlFor="">Enter your name</label>
-        <Input placeholder='e.g. John Doe' onChange={(e) => setField(e.target.value)} />
-      </div>
-      <div className='my-3 w-1/2 pb-3 rounded-2xl'>
-        <label htmlFor="">Enter your email</label>
-        <Input placeholder='e.g. Johndoe@gmail.com' onChange={(e) => setUserEmail(e.target.value)} />
-      </div>
-      <div className='p-3 mt-1 mb-5 w-1/2 rounded-2xl   bg-primary/20 text-primary/60 '>
-        <h1>Information</h1>
-        <p className='text-sm text-gray-500'>You will be asked a series
-          of questions related to the job position you applied for. Please answer them to the best of your ability.</p>
-        <p className='text-sm text-gray-500'>Please ensure you have a stable
-          internet connection and a quiet environment to take the interview.</p>
 
-
+        <p className="text-center text-sm text-[#94a3b8] mt-6">
+          Powered by <span className="font-semibold text-[#4945d1]">NextHire AI</span>
+        </p>
       </div>
-
     </div>
   )
 }

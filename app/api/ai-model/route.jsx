@@ -1,10 +1,26 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from 'next/server';
 import { QuestionPrompt } from "../../../services/Constants/QuestionPrompt";
+import aj from "@/lib/arcjet";
 
 const apiKey = process.env.GEMINI_API_KEY;
 
 export async function POST(req) {
+  // Rate limiting check with Arcjet
+  const decision = await aj.protect(req, { requested: 1 });
+
+  if (decision.isDenied()) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: "You've reached your interview generation limit. Please try again in 1 hour.",
+        rateLimited: true,
+        message: "To ensure fair usage for all users, we limit the number of AI interviews you can create. Your limit will reset shortly."
+      },
+      { status: 429 }
+    );
+  }
+
   try {
     const { JobPosition, JobDescription, InterviewDuration, InterviewType } = await req.json();
     const FinalResponse = QuestionPrompt

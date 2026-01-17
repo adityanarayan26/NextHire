@@ -1,13 +1,29 @@
 import { NextResponse } from "next/server";
 import { FeedBack } from "../../../services/Constants/FeedBackPrompt";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-
+import aj from "@/lib/arcjet";
 
 const apiKey = process.env.GEMINI_API_KEY;
+
 export async function POST(req) {
- try {
-    const {conversation} = await req.json();
-const FinalResponse = FeedBack.replace('{{conversation}}',JSON.stringify(conversation))
+  // Rate limiting check with Arcjet
+  const decision = await aj.protect(req, { requested: 1 });
+
+  if (decision.isDenied()) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: "You've reached your feedback generation limit. Please try again in 1 hour.",
+        rateLimited: true,
+        message: "To ensure fair usage for all users, we limit the number of AI feedback requests. Your limit will reset shortly."
+      },
+      { status: 429 }
+    );
+  }
+
+  try {
+    const { conversation } = await req.json();
+    const FinalResponse = FeedBack.replace('{{conversation}}', JSON.stringify(conversation));
 
     if (!FinalResponse) {
       return NextResponse.json({ success: false, error: "Failed to generate prompt." }, { status: 400 });
@@ -64,9 +80,9 @@ const FinalResponse = FeedBack.replace('{{conversation}}',JSON.stringify(convers
       return NextResponse.json({ success: false, error: "Invalid JSON response from Gemini", raw: rawText }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, modelUsed, Feedback : response });
+    return NextResponse.json({ success: true, modelUsed, Feedback: response });
   } catch (error) {
     console.error("Error in AI model route:", error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-  } 
+  }
 }

@@ -1,93 +1,130 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input';
-import { supabase } from '@/services/supabase-client';
 import { RiWhatsappFill } from '@remixicon/react';
-import { ArrowLeft, Book, Clock, Copy, Mail, Plus, Slack, Timer } from 'lucide-react';
+import { ArrowLeft, Book, Clock, Copy, Mail, Plus, Slack, CheckCircle, Share2, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useEffect } from 'react'
+import React from 'react'
 import { toast } from 'sonner';
 
-const InterviewLink = ({interviewID,formData}) => {
-  const url = process.env.NEXT_PUBLIC_URL+'/interview/'+interviewID
+const InterviewLink = ({ interviewID, formData }) => {
+  const url = process.env.NEXT_PUBLIC_URL + '/interview/' + interviewID
+  const router = useRouter()
 
+  const CopiedLink = async () => {
+    await navigator.clipboard.writeText(url)
+    toast.success('Interview link copied!')
+  }
 
-
-          
-const GenerateLink = ()=>{
-  return url
-}
-const CopiedLink=async()=>{
-  await navigator.clipboard.writeText(url)
-  toast('Link copied to clipboard!')
-}
   return (
-    <div className=''>
-      <div className=' flex justify-center flex-col items-center'>
-<svg width="133px" height="133px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fillRule="evenodd" clipRule="evenodd" d="M2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM15.7071 9.29289C16.0976 9.68342 16.0976 10.3166 15.7071 10.7071L12.0243 14.3899C11.4586 14.9556 10.5414 14.9556 9.97568 14.3899L8.29289 12.7071C7.90237 12.3166 7.90237 11.6834 8.29289 11.2929C8.68342 10.9024 9.31658 10.9024 9.70711 11.2929L11 12.5858L14.2929 9.29289C14.6834 8.90237 15.3166 8.90237 15.7071 9.29289Z" fill="#26c939"></path> </g></svg>
-<h2 className='font-medium capitalize pt-4 text-lg'>Your AI Interview Is ready!</h2>
-<h3 className='capitalize '>Share this link with your candidates to start the interview process</h3>
-      </div>
-      <div className='bg-white p-5 rounded-2xl mt-5'>
-        <div className='flex justify-between pb-3'>
-
-<h1 className='font-medium text-lg'>Interview Link</h1>
-<Button className='text-primary/50 text-xs rounded-2xl bg-primary/30 px-2 py-1 hover:bg-primary/30 hover:text-primary/50' size='xs'>
-Valid for 30days
-</Button>
+    <div className="space-y-6">
+      {/* Success Card */}
+      <div className="pro-card p-8 text-center">
+        <div className="w-20 h-20 mx-auto rounded-2xl gradient-success flex items-center justify-center mb-6">
+          <CheckCircle className="w-10 h-10 text-white" />
         </div>
-<div className='flex justify-between items-center gap-x-2'>
-
-<Input defaultValue={GenerateLink()} disabled={true} />
-
-<Button onClick={CopiedLink}>
-  <Copy/>
-  Copy Link
-</Button>
-
-</div>
-<div className='flex gap-x-2 mt-5'>
-  <h2 className='px-2 py-1 bg-gray-200 text-black/60 text-sm rounded-2xl flex gap-x-1 items-center'><Clock size={20}/> {formData?.InterviewDuration} </h2>
-  <h2 className='px-2 py-1 bg-gray-200 text-black/60 text-sm rounded-2xl flex gap-x-1 items-center'><Book size={20}/> {formData?.QuestionList?.length} Questions</h2>
-  <h2 className='px-2 py-1 bg-gray-200 text-black/60 text-sm rounded-2xl flex gap-x-1 items-center'><Timer size={20}/> Expires on  </h2>
-</div>
+        <h2 className="text-2xl font-bold text-[#0f172a] mb-2">Interview Created!</h2>
+        <p className="text-[#64748b] max-w-md mx-auto">
+          Your AI-powered interview is ready. Share the link with candidates to get started.
+        </p>
       </div>
 
-      
-      <div className="bg-white rounded-2xl p-5 mt-5">
-        <h1 className="text-lg">Share via</h1>
-        <div className="flex gap-x-5 mt-3 justify-center">
+      {/* Link Card */}
+      <div className="pro-card p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Share2 className="w-5 h-5 text-[#4945d1]" />
+            <h3 className="font-semibold text-[#0f172a]">Interview Link</h3>
+          </div>
+          <span className="px-3 py-1 rounded-lg bg-[#fef3c7] text-[#d97706] text-xs font-medium flex items-center gap-1">
+            <Calendar className="w-3 h-3" />
+            Valid 30 days
+          </span>
+        </div>
+
+        <div className="flex gap-3 mb-5">
+          <Input
+            defaultValue={url}
+            readOnly
+            className="h-12 bg-[#f8fafc] border-[#e2e8f0] font-mono text-sm rounded-xl"
+          />
+          <Button onClick={CopiedLink} className="h-12 px-6 gap-2 btn-primary rounded-xl">
+            <Copy className="w-4 h-4" />
+            Copy
+          </Button>
+        </div>
+
+        {/* Stats */}
+        <div className="flex flex-wrap gap-3">
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#f1f5f9] text-sm">
+            <Clock className="w-4 h-4 text-[#4945d1]" />
+            <span className="text-[#64748b]">{formData?.InterviewDuration}</span>
+          </div>
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#f1f5f9] text-sm">
+            <Book className="w-4 h-4 text-[#4945d1]" />
+            <span className="text-[#64748b]">{formData?.QuestionList?.length || 0} Questions</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Share Options */}
+      <div className="pro-card p-6">
+        <h3 className="font-semibold text-[#0f172a] mb-4 flex items-center gap-2">
+          <Share2 className="w-5 h-5 text-[#4945d1]" />
+          Quick Share
+        </h3>
+        <div className="flex justify-center gap-4">
           <a
-            href={`mailto:?subject=${encodeURIComponent('Interview Invitation')}&body=${encodeURIComponent(url)}`}
+            href={`mailto:?subject=${encodeURIComponent('Interview Invitation - ' + formData?.JobPosition)}&body=${encodeURIComponent(`You have been invited to an AI-powered interview.\n\nPosition: ${formData?.JobPosition}\nDuration: ${formData?.InterviewDuration}\n\nJoin here: ${url}`)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-gray-200 text-black/60 px-2 py-1 text-sm rounded-2xl flex gap-x-1 items-center"
+            className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#f8fafc] hover:bg-[#f1f5f9] transition-colors group"
           >
-            <Mail size={20} /> Email
+            <div className="w-12 h-12 rounded-xl bg-[#fee2e2] flex items-center justify-center group-hover:bg-[#ef4444] transition-all">
+              <Mail className="w-6 h-6 text-[#ef4444] group-hover:text-white" />
+            </div>
+            <span className="text-sm font-medium text-[#64748b]">Email</span>
           </a>
           <a
-            href={`https://wa.me/?text=${encodeURIComponent(`Join the interview: ${url}`)}`}
+            href={`https://wa.me/?text=${encodeURIComponent(`Interview Invitation\n\nPosition: ${formData?.JobPosition}\nDuration: ${formData?.InterviewDuration}\n\nJoin: ${url}`)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-gray-200 text-black/60 px-2 py-1 text-sm rounded-2xl flex gap-x-1 items-center"
+            className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#f8fafc] hover:bg-[#f1f5f9] transition-colors group"
           >
-            <RiWhatsappFill size={20} /> WhatsApp
+            <div className="w-12 h-12 rounded-xl bg-[#d1fae5] flex items-center justify-center group-hover:bg-[#22c55e] transition-all">
+              <RiWhatsappFill className="w-6 h-6 text-[#22c55e] group-hover:text-white" />
+            </div>
+            <span className="text-sm font-medium text-[#64748b]">WhatsApp</span>
           </a>
           <a
             href={`https://slack.com/app_redirect`}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-gray-200 text-black/60 px-2 py-1 text-sm rounded-2xl flex gap-x-1 items-center"
+            className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#f8fafc] hover:bg-[#f1f5f9] transition-colors group"
           >
-            <Slack size={20} /> Slack
+            <div className="w-12 h-12 rounded-xl bg-[#f3e8ff] flex items-center justify-center group-hover:bg-[#7c3aed] transition-all">
+              <Slack className="w-6 h-6 text-[#7c3aed] group-hover:text-white" />
+            </div>
+            <span className="text-sm font-medium text-[#64748b]">Slack</span>
           </a>
         </div>
       </div>
-<div className='mt-7 flex items-center justify-between'> 
-  <Link href={'/dashboard'}><Button ><ArrowLeft size={20}/> Back to Dashboard</Button></Link>
- <Link href={'/interview/'+interviewID} className='flex items-center gap-x-2'>
-<Button><Plus size={20}/> Create Interview</Button> </Link> 
-</div>
+
+      {/* Actions */}
+      <div className="flex items-center justify-between pt-4">
+        <Link href="/dashboard">
+          <Button className="h-12 btn-secondary gap-2 rounded-xl">
+            <ArrowLeft className="w-4 h-4" />
+            Dashboard
+          </Button>
+        </Link>
+        <Link href={'/interview/' + interviewID}>
+          <Button className="h-12 btn-primary gap-2 rounded-xl">
+            Preview Interview
+            <Plus className="w-4 h-4" />
+          </Button>
+        </Link>
+      </div>
     </div>
   )
 }

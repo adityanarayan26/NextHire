@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import InterviewList from '../interview/_components/InterviewList'
+import InterviewList from '@/app/interview/_components/InterviewList'
 const AllInterviewList = () => {
   return (
     <div>

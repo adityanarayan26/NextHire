@@ -1,12 +1,8 @@
 'use client'
-import { RiPagesLine } from "react-icons/ri";
-import { BsPersonSquare } from "react-icons/bs";
-import { BiTimer } from "react-icons/bi";
-
 import { UseUser } from '@/app/Provider'
 import { Button } from '@/components/ui/button'
 import { supabase } from '@/services/supabase-client'
-import { Book, ClipboardCopyIcon, SearchCodeIcon, Video } from 'lucide-react'
+import { Book, ClipboardCopy, Users, Calendar, Briefcase, Clock, ArrowRight, Video } from 'lucide-react'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import moment from 'moment'
@@ -17,136 +13,166 @@ const PreviouslyCreatedInterview = () => {
   const { user } = UseUser()
   const router = useRouter()
   const [interviews, setInterviews] = React.useState([])
-const[feedback,setfeedback]=useState([])
+  const [feedback, setfeedback] = useState([])
+
   useEffect(() => {
     GetInterviewList()
   }, [user])
 
   const GetInterviewList = async () => {
-    //interview list
     let { data: Interviews, err } = await supabase
       .from('Interviews')
       .select('*')
       .eq('UserEmail', user?.email)
       .order('id', { ascending: false })
-      .limit(4)
-      console.log('Interviews',Interviews);
-      
+      .limit(6)
+
     setInterviews(Interviews || [])
 
-    // feedback list 
-
-let { data: Interviewfeedback, error } = await supabase
-  .from('Interview-feedback')
-  .select('*')
-  console.log('Interviewfeedback',Interviewfeedback);
-  setfeedback(Interviewfeedback || [])
-
-          
+    let { data: Interviewfeedback, error } = await supabase
+      .from('Interview-feedback')
+      .select('*')
+    setfeedback(Interviewfeedback || [])
   }
 
   const copyurl = async (url) => {
     try {
       const urlLink = `${process.env.NEXT_PUBLIC_URL}/interview/${url}`
       await navigator.clipboard.writeText(urlLink)
-      toast('Copied URL to clipboard!', {
-        description: 'You can now share this link with others.',
-        duration: 2000,
-      })
+      toast.success('Interview link copied!')
     } catch (err) {
       console.error('Failed to copy:', err)
     }
   }
 
+  const getTypeColor = (type) => {
+    const colors = {
+      'Technical': 'bg-[#dbeafe] text-[#1d4ed8]',
+      'Behavioral': 'bg-[#ffedd5] text-[#c2410c]',
+      'Experience': 'bg-[#f3e8ff] text-[#7c3aed]',
+      'Problem Solving': 'bg-[#fee2e2] text-[#dc2626]',
+      'Leadership': 'bg-[#d1fae5] text-[#059669]',
+    };
+    return colors[type] || 'bg-[#f1f5f9] text-[#64748b]';
+  };
+
   return (
-    <div className="mt-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-      <h1 className="font-semibold text-xl text-gray-800 mb-4">
-        Previously Created Interviews
-      </h1>
+    <div>
+      {/* Section Header */}
+      <div className="flex items-center justify-between mb-5">
+        <div>
+          <h2 className="text-lg font-semibold text-[#0f172a]">Recent Interviews</h2>
+          <p className="text-sm text-[#64748b]">Your latest interview sessions</p>
+        </div>
+        {interviews?.length > 0 && (
+          <Link href="/all-interviews">
+            <Button variant="ghost" className="text-[#4945d1] hover:bg-[#e8eaf6] gap-1">
+              View All <ArrowRight className="w-4 h-4" />
+            </Button>
+          </Link>
+        )}
+      </div>
 
       {interviews?.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-6">
-          {interviews.map((interview, index) => (
-            <div
-              key={index}
-              
-              className="relative flex flex-col  gap-4 p-6 bg-gray-50 rounded-xl border border-gray-200 shadow hover:bg-gray-100 transition  duration-300 cursor-pointer"
-            >
-              {/* Date Pill */}
-              
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+          {interviews.map((interview, index) => {
+            const candidateCount = feedback?.filter((item) => item?.interviewId == interview?.InterviewID).length;
 
-              {/* Avatar Section */}
-              <div className="flex  items-center gap-x-2">
-                <div className="w-12 h-12 rounded-full bg-primary/20 text-primary flex items-center justify-center text-lg font-semibold">
-                  {user?.name[0]}
+            return (
+              <div
+                key={index}
+                className="pro-card p-5 hover-lift animate-fade-in"
+                style={{ animationDelay: `${index * 0.05}s` }}
+              >
+                {/* Header */}
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-xl gradient-primary flex items-center justify-center text-white font-semibold">
+                      {interview?.JobPosition?.[0]?.toUpperCase() || 'J'}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-[#0f172a] capitalize line-clamp-1">
+                        {interview?.JobPosition}
+                      </h3>
+                      <p className="text-xs text-[#64748b] flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        {moment(interview?.createdAt).format('MMM DD, YYYY')}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <span className="mt-1 text-sm font-medium text-gray-800 truncate">
-                  {user?.name}
-                </span>
-              </div>
 
-
-
-              {/* Interview Details */}
-              <div className="flex items-start  justify-center flex-col min-w-0">
-                <div className="mb-1">
-                  <p className="text-sm flex gap-x-1 justify-between items-center font-semibold text-gray-700">
-
-<div><BsPersonSquare size={16}/></div>
- Job Position:
-                    <span className="text-sm text-blue-500 capitalize font-medium  ml-1">
-                      {interview?.JobPosition}
-                    </span>
-                  </p>
+                {/* Stats Row */}
+                <div className="flex items-center gap-4 mb-4 pb-4 border-b border-[#e2e8f0]">
+                  <div className="flex items-center gap-2 text-sm text-[#64748b]">
+                    <Clock className="w-4 h-4" />
+                    {interview?.InterviewDuration}
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Users className="w-4 h-4 text-[#059669]" />
+                    <span className="text-[#059669] font-medium">{candidateCount}</span>
+                    <span className="text-[#64748b]">candidates</span>
+                  </div>
                 </div>
-                <div className="mb-1">
-                  <p className="text-sm flex gap-x-1 justify-between items-center font-semibold text-gray-700">
-                <div><RiPagesLine size={20}/></div>  
-  Job Description:
-                    <span className="text-sm text-blue-500 capitalize font-medium  ml-1">
-                      {interview?.JobDescription}
-                    </span>
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm flex gap-x-1 justify-between items-center font-semibold text-gray-700">
-             <div><BiTimer size={23}/></div>     
-  Interview Duration:
-                    <span className="text-sm text-blue-500 capitalize font-medium  ml-1">
-                      {interview?.InterviewDuration}
-                    </span>
-                  </p>
-                </div>
-              </div>
 
+                {/* Interview Types */}
+                {interview?.InterviewType && (
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {JSON.parse(interview?.InterviewType).slice(0, 3).map((type, idx) => (
+                      <span
+                        key={idx}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-medium ${getTypeColor(type)}`}
+                      >
+                        {type}
+                      </span>
+                    ))}
+                  </div>
+                )}
 
-              {/* Copy Button */}
-              
-              <div className="flex  justify-between items-center gap-y-2">
-              <div className='size-full flex items-end'>
-                <h1 className='text-sm font-medium text-emerald-500'>Candidates {feedback?.filter((item)=>item?.interviewId == interview?.InterviewID).length}</h1>
+                {/* Actions */}
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    className="flex-1 btn-secondary gap-1.5 text-xs"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      copyurl(interview?.InterviewID);
+                    }}
+                  >
+                    <ClipboardCopy className="w-3.5 h-3.5" />
+                    Copy Link
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="flex-1 btn-primary gap-1.5 text-xs"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`${interview?.InterviewID}/report`);
+                    }}
+                  >
+                    <Book className="w-3.5 h-3.5" />
+                    Report
+                  </Button>
+                </div>
               </div>
-              <div className='flex flex-col items-end gap-2'>
-                <Button size='xs' className='px-2 flex items-center gap-x-1 py-1 capitalize' onClick={() => copyurl(interview?.InterviewID)}>
-                  <ClipboardCopyIcon size={20}/> Copy link
-                </Button>
-                <Button size='xs' className='px-2 flex items-center gap-x-1 py-1 bg-emerald-500 text-white capitalize' onClick={()=>router.replace(`${interview?.InterviewID}/report`)}>
-                <Book size={20}/>  view report
-                </Button>
-                <span className="text-xs text-gray-500">
-                {moment(interview?.createdAt).format('DD MMM yyyy')}
-              </span>
-              </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center gap-3 bg-gray-50 p-6 rounded-xl border border-dashed border-gray-300 mt-6 text-center">
-          <Video className="w-12 h-12 text-gray-500 bg-gray-200 p-3 rounded-lg" />
-          <h2 className="text-gray-500 font-semibold text-sm">No interviews created yet</h2>
+        /* Empty State */
+        <div className="pro-card p-12 text-center">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-[#e8eaf6] flex items-center justify-center mb-4">
+            <Video className="w-8 h-8 text-[#4945d1]" />
+          </div>
+          <h3 className="text-lg font-semibold text-[#0f172a] mb-2">No interviews yet</h3>
+          <p className="text-sm text-[#64748b] mb-6 max-w-sm mx-auto">
+            Create your first AI-powered interview and start screening candidates.
+          </p>
           <Link href="/dashboard/createInterview">
-            <Button>Create new interviews +</Button>
+            <Button className="btn-primary gap-2">
+              <Video className="w-4 h-4" />
+              Create Interview
+            </Button>
           </Link>
         </div>
       )}
