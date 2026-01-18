@@ -327,130 +327,102 @@ const StartInterview = () => {
     const parsedDuration = parseInt(interviewInfo?.InterviewData?.InterviewDuration?.replace(/[^\d]/g, '')) || 0
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#0f0f1a] via-[#1a1a2e] to-[#16213e] p-4 md:p-8 relative overflow-hidden">
-            {/* Animated background elements */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-20 left-10 w-72 h-72 bg-[#4945d1]/20 rounded-full blur-[100px] animate-pulse" />
-                <div className="absolute bottom-20 right-10 w-96 h-96 bg-[#7c3aed]/15 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#4945d1]/5 rounded-full blur-[150px]" />
-            </div>
+        <div className="h-screen bg-black p-6 relative overflow-hidden">
+            {/* Subtle gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] via-transparent to-white/[0.02]" />
 
-            <div className="relative z-10 max-w-5xl mx-auto">
+            {/* Grid pattern */}
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+
+            <div className="relative z-10 h-full flex flex-col max-w-4xl mx-auto">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-10">
+                <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center gap-3">
-                        <img src="/logo.svg" alt="NextHire" className="h-9" />
+                        <img src="/logo.svg" alt="NextHire" className="h-7 invert opacity-80" />
+                        {interviewInfo?.InterviewData?.JobPosition && (
+                            <span className="text-white/40 text-sm font-light">/ {interviewInfo?.InterviewData?.JobPosition}</span>
+                        )}
                     </div>
-                    <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white text-sm font-medium">
-                            <div className={`w-2 h-2 rounded-full ${isCallActive ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
-                            <Timer className="w-4 h-4 text-white/70" />
-                            {isCallActive ? (
-                                <TimerComponent durationInMinutes={parsedDuration} />
-                            ) : (
-                                <span className="text-white/70">Ready</span>
-                            )}
-                        </div>
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10">
+                        <div className={`w-1.5 h-1.5 rounded-full ${isCallActive ? 'bg-white animate-pulse' : 'bg-white/40'}`} />
+                        <Timer className="w-3.5 h-3.5 text-white/50" />
+                        {isCallActive ? (
+                            <TimerComponent durationInMinutes={parsedDuration} />
+                        ) : (
+                            <span className="text-white/50 text-sm">Ready</span>
+                        )}
                     </div>
                 </div>
 
-                {/* Job Position Badge */}
-                {interviewInfo?.InterviewData?.JobPosition && (
-                    <div className="text-center mb-8">
-                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#4945d1]/20 border border-[#4945d1]/30 text-[#a5b4fc] text-sm font-medium backdrop-blur-sm">
-                            <Sparkles className="w-4 h-4" />
-                            {interviewInfo?.InterviewData?.JobPosition}
-                        </span>
-                    </div>
-                )}
-
                 {/* Participants */}
-                <div className="grid md:grid-cols-2 gap-6 mb-10">
+                <div className="flex-1 grid md:grid-cols-2 gap-6 mb-8">
                     {/* AI Card */}
-                    <div className={`group relative rounded-3xl p-8 transition-all duration-500 ${activeSpeaker === 'ai'
-                        ? 'bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border-2 border-emerald-400/50 shadow-[0_0_60px_rgba(52,211,153,0.3)]'
-                        : 'bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] hover:border-white/20'
+                    <div className={`relative rounded-2xl p-6 transition-all duration-500 border ${activeSpeaker === 'ai'
+                        ? 'bg-white/[0.08] border-white/30'
+                        : 'bg-white/[0.02] border-white/10 hover:bg-white/[0.04]'
                         }`}>
-                        {/* Glow effect when speaking */}
-                        {activeSpeaker === 'ai' && (
-                            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-emerald-400/10 to-transparent animate-pulse" />
-                        )}
-
-                        <div className="relative flex flex-col items-center">
-                            <div className={`relative w-28 h-28 rounded-2xl mb-5 flex items-center justify-center overflow-hidden ${activeSpeaker === 'ai'
-                                ? 'ring-4 ring-emerald-400/50 ring-offset-4 ring-offset-transparent'
-                                : 'ring-2 ring-white/10'
-                                }`}>
-                                <div className="absolute inset-0 bg-gradient-to-br from-[#4945d1] to-[#7c3aed]" />
-                                <Image src={'/ai-interviewer.webp'} height={80} width={80} className="relative z-10 rounded-xl object-cover" alt="AI" />
+                        <div className="flex flex-col items-center">
+                            <div className={`relative w-20 h-20 rounded-xl mb-4 overflow-hidden transition-all ${activeSpeaker === 'ai' ? 'ring-2 ring-white/50 ring-offset-2 ring-offset-black' : ''}`}>
+                                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-white/5" />
+                                <Image src={'/interviewer.png'} height={80} width={80} className="relative z-10 object-cover" alt="AI" />
                             </div>
 
-                            <h2 className="text-xl font-bold text-white mb-1">NextHire AI</h2>
-                            <p className="text-sm text-white/50 mb-4">Interviewer</p>
+                            <h2 className="text-lg font-medium text-white mb-0.5">NextHire AI</h2>
+                            <p className="text-xs text-white/40 mb-4">Interviewer</p>
 
                             {/* Voice visualizer */}
-                            <div className="flex items-end gap-1 h-8">
+                            <div className="flex items-center justify-center gap-1 h-6">
                                 {activeSpeaker === 'ai' ? (
                                     [0, 1, 2, 3, 4].map((i) => (
                                         <div
                                             key={i}
-                                            className="w-1.5 bg-gradient-to-t from-emerald-400 to-emerald-300 rounded-full animate-bounce"
+                                            className="w-1 bg-white rounded-full animate-pulse"
                                             style={{
-                                                height: `${14 + Math.random() * 18}px`,
-                                                animationDelay: `${i * 0.1}s`,
-                                                animationDuration: '0.5s'
+                                                height: `${8 + Math.random() * 16}px`,
+                                                animationDelay: `${i * 0.15}s`,
+                                                animationDuration: '0.6s'
                                             }}
                                         />
                                     ))
                                 ) : (
-                                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5">
-                                        <Volume2 className="w-3.5 h-3.5 text-white/40" />
-                                        <span className="text-xs text-white/40">Idle</span>
-                                    </div>
+                                    <span className="text-[10px] text-white/30 uppercase tracking-widest">Idle</span>
                                 )}
                             </div>
                         </div>
                     </div>
 
                     {/* User Card */}
-                    <div className={`group relative rounded-3xl p-8 transition-all duration-500 ${activeSpeaker === 'user'
-                        ? 'bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border-2 border-emerald-400/50 shadow-[0_0_60px_rgba(52,211,153,0.3)]'
-                        : 'bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] hover:border-white/20'
+                    <div className={`relative rounded-2xl p-6 transition-all duration-500 border ${activeSpeaker === 'user'
+                        ? 'bg-white/[0.08] border-white/30'
+                        : 'bg-white/[0.02] border-white/10 hover:bg-white/[0.04]'
                         }`}>
-                        {activeSpeaker === 'user' && (
-                            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-emerald-400/10 to-transparent animate-pulse" />
-                        )}
-
-                        <div className="relative flex flex-col items-center">
-                            <div className={`relative w-28 h-28 rounded-2xl mb-5 flex items-center justify-center text-4xl font-bold ${activeSpeaker === 'user'
-                                ? 'bg-gradient-to-br from-[#4945d1] to-[#7c3aed] text-white ring-4 ring-emerald-400/50 ring-offset-4 ring-offset-transparent'
-                                : 'bg-white/10 text-white/60 ring-2 ring-white/10'
+                        <div className="flex flex-col items-center">
+                            <div className={`relative w-20 h-20 rounded-xl mb-4 flex items-center justify-center text-2xl font-medium transition-all ${activeSpeaker === 'user'
+                                ? 'bg-white text-black ring-2 ring-white/50 ring-offset-2 ring-offset-black'
+                                : 'bg-white/10 text-white/60'
                                 }`}>
                                 {interviewInfo?.Username?.[0]?.toUpperCase() || 'U'}
                             </div>
 
-                            <h2 className="text-xl font-bold text-white capitalize mb-1">{interviewInfo?.Username || 'Candidate'}</h2>
-                            <p className="text-sm text-white/50 mb-4">Candidate</p>
+                            <h2 className="text-lg font-medium text-white capitalize mb-0.5">{interviewInfo?.Username || 'Candidate'}</h2>
+                            <p className="text-xs text-white/40 mb-4">Candidate</p>
 
                             {/* Voice visualizer */}
-                            <div className="flex items-end gap-1 h-8">
+                            <div className="flex items-center justify-center gap-1 h-6">
                                 {activeSpeaker === 'user' ? (
                                     [0, 1, 2, 3, 4].map((i) => (
                                         <div
                                             key={i}
-                                            className="w-1.5 bg-gradient-to-t from-emerald-400 to-emerald-300 rounded-full animate-bounce"
+                                            className="w-1 bg-white rounded-full animate-pulse"
                                             style={{
-                                                height: `${14 + Math.random() * 18}px`,
-                                                animationDelay: `${i * 0.1}s`,
-                                                animationDuration: '0.5s'
+                                                height: `${8 + Math.random() * 16}px`,
+                                                animationDelay: `${i * 0.15}s`,
+                                                animationDuration: '0.6s'
                                             }}
                                         />
                                     ))
                                 ) : (
-                                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5">
-                                        <Mic className="w-3.5 h-3.5 text-white/40" />
-                                        <span className="text-xs text-white/40">Idle</span>
-                                    </div>
+                                    <span className="text-[10px] text-white/30 uppercase tracking-widest">Idle</span>
                                 )}
                             </div>
                         </div>
@@ -458,15 +430,14 @@ const StartInterview = () => {
                 </div>
 
                 {/* Controls */}
-                <div className="flex flex-col items-center gap-6">
-                    <div className="flex items-center gap-4">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="flex items-center gap-3">
                         {!isCallActive ? (
                             <button
                                 onClick={startDeepgram}
-                                className="group relative px-10 py-4 rounded-2xl bg-gradient-to-r from-[#4945d1] to-[#7c3aed] text-white font-semibold text-lg hover:shadow-[0_0_40px_rgba(73,69,209,0.5)] transition-all duration-300 flex items-center gap-3 overflow-hidden"
+                                className="group px-8 py-3.5 rounded-xl bg-white text-black font-medium hover:bg-white/90 transition-all flex items-center gap-2"
                             >
-                                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
-                                <Mic className="w-5 h-5" />
+                                <Mic className="w-4 h-4" />
                                 Start Interview
                             </button>
                         ) : (
@@ -474,45 +445,35 @@ const StartInterview = () => {
                                 {loading || activeSpeaker === 'ai' ? (
                                     <button
                                         onClick={handleInterrupt}
-                                        className="px-8 py-3.5 rounded-xl bg-white/10 backdrop-blur-xl hover:bg-white/20 text-white font-semibold transition-all flex items-center gap-2 border border-white/20"
+                                        className="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium transition-all flex items-center gap-2 border border-white/20"
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" /></svg>
-                                        Stop / Interrupt
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" /></svg>
+                                        Interrupt
                                     </button>
                                 ) : (
                                     <button
                                         onClick={() => processUserTurn()}
-                                        className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-semibold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/20"
+                                        className="px-6 py-3 rounded-xl bg-white text-black font-medium hover:bg-white/90 transition-all flex items-center gap-2"
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg>
-                                        Finish Answer
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="M22 4L12 14.01l-3-3" /></svg>
+                                        Submit Answer
                                     </button>
                                 )}
 
                                 <button
                                     onClick={stopCall}
-                                    className="w-14 h-14 rounded-2xl bg-gradient-to-br from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 flex items-center justify-center text-white shadow-lg shadow-red-500/30 transition-all"
+                                    className="w-12 h-12 rounded-xl bg-white/10 hover:bg-red-500/20 border border-white/10 hover:border-red-500/30 flex items-center justify-center text-white/60 hover:text-red-400 transition-all"
                                 >
-                                    <Phone className="w-6 h-6 rotate-[135deg]" />
+                                    <Phone className="w-5 h-5 rotate-[135deg]" />
                                 </button>
                             </>
                         )}
                     </div>
 
-                    {/* Status indicator */}
-                    <div className={`flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm ${loading
-                        ? 'bg-emerald-500/10 border border-emerald-500/20'
-                        : isCallActive
-                            ? 'bg-white/5 border border-white/10'
-                            : 'bg-amber-500/10 border border-amber-500/20'
-                        }`}>
-                        <div className={`w-2 h-2 rounded-full animate-pulse ${loading ? 'bg-emerald-400' : isCallActive ? 'bg-white/60' : 'bg-amber-400'
-                            }`} />
-                        <p className={`text-sm font-medium ${loading ? 'text-emerald-400' : isCallActive ? 'text-white/60' : 'text-amber-400'
-                            }`}>
-                            {loading ? 'AI is thinking...' : isCallActive ? 'Listening (Auto-submit in 3s)...' : 'Click Start to begin'}
-                        </p>
-                    </div>
+                    {/* Status */}
+                    <p className={`text-xs font-light ${loading ? 'text-white/60' : 'text-white/40'}`}>
+                        {loading ? 'AI is thinking...' : isCallActive ? 'Speak naturally. Auto-submit after 3s silence.' : 'Click Start to begin'}
+                    </p>
                 </div>
             </div>
         </div>

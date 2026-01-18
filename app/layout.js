@@ -1,17 +1,13 @@
 
-import { Geist, Geist_Mono } from "next/font/google";
-
+import localFont from "next/font/local";
 import "./globals.css";
 import Provider from './Provider'
 import { Analytics } from '@vercel/analytics/react'
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const montreal = localFont({
+  src: './ppneuemontreal-medium.1d9802bc.woff',
+  variable: '--font-montreal',
+  weight: '500',
 });
 
 export const metadata = {
@@ -26,7 +22,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${montreal.variable} antialiased font-[family-name:var(--font-montreal)]`}
       >
         <Provider>
           {children}
