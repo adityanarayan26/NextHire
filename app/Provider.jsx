@@ -2,19 +2,31 @@
 import React, { useContext, useEffect } from 'react'
 import { supabase } from '../services/supabase-client'
 import { UserDetailContext } from '../context/UserDetailContext'
-import {FeedbackContext} from '../context/FeedbackContext'
-import { useRouter } from 'next/navigation';
+import { FeedbackContext } from '../context/FeedbackContext'
+import { useRouter, usePathname } from 'next/navigation';
 
 const Provider = ({ children }) => {
     const [user, setuser] = React.useState()
     const [feedbackCredentials, setFeedbackCredentials] = React.useState()
     const router = useRouter();
+    const pathname = usePathname();
 
     useEffect(() => {
         const createNewUser = async () => {
             const { data: { user } } = await supabase.auth.getUser();
+
             if (!user) {
-                router.push('/login');
+                // Allow access to public routes manually
+                const publicRoutes = ['/', '/login', '/auth/callback'];
+                if (!publicRoutes.includes(pathname)) {
+                    router.push('/login');
+                }
+                return;
+            }
+
+            // If user is authenticated and tries to access login, redirect to dashboard
+            if (pathname === '/login') {
+                router.push('/dashboard');
                 return;
             }
 
@@ -37,18 +49,18 @@ const Provider = ({ children }) => {
         };
 
         createNewUser();
-    }, [])
+    }, [pathname])
 
 
     return (
         <UserDetailContext.Provider value={{ user, setuser }}>
-<FeedbackContext.Provider value={{feedbackCredentials, setFeedbackCredentials}}>
+            <FeedbackContext.Provider value={{ feedbackCredentials, setFeedbackCredentials }}>
 
-            <div>
+                <div>
 
-                {children}
-            </div>
-</FeedbackContext.Provider>
+                    {children}
+                </div>
+            </FeedbackContext.Provider>
         </UserDetailContext.Provider>
     )
 }
@@ -56,6 +68,6 @@ const Provider = ({ children }) => {
 export default Provider
 
 export const UseUser = () => {
-const context = useContext(UserDetailContext)
-return context
+    const context = useContext(UserDetailContext)
+    return context
 }
