@@ -473,3 +473,59 @@
   transform: translateY(-2px);
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
+
+/* ============================================
+   DRIVER.JS CUSTOM THEME
+   Black popover, White text, Red accents
+   ============================================ */
+.driver-popover.driverjs-theme {
+  background-color: #000000;
+  color: #ffffff;
+  border: 1px solid #333333;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+}
+
+.driver-popover.driverjs-theme .driver-popover-title {
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.driver-popover.driverjs-theme .driver-popover-description {
+  color: #cccccc;
+  font-size: 0.9rem;
+}
+
+.driver-popover.driverjs-theme button {
+  flex: 1;
+  text-align: center;
+  background-color: #ffffff;
+  color: #000000;
+  border: none;
+  border-radius: 6px;
+  text-shadow: none;
+  font-size: 12px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.driver-popover.driverjs-theme button:hover {
+  background-color: #e5e5e5;
+  color: #000000;
+}
+
+/* Specific button styles */
+.driver-popover.driverjs-theme .driver-popover-navigation-btns {
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.driver-popover.driverjs-theme .driver-popover-close-btn {
+  color: #999999;
+  transition: color 0.2s;
+}
+
+.driver-popover.driverjs-theme .driver-popover-close-btn:hover {
+  color: #ffffff;
+}

@@ -1,6 +1,6 @@
 'use client'
 import { InterviewContext } from '@/context/InterviewContext'
-import { Loader2, Mic, Phone, Timer, Sparkles, Volume2 } from 'lucide-react'
+import { Loader2, Mic, Phone, Timer, Sparkles, Volume2, CircleHelp } from 'lucide-react'
 import Image from 'next/image'
 import React, { useContext, useEffect, useState, useRef } from 'react'
 import { supabase } from '../../../../services/supabase-client'
@@ -9,6 +9,8 @@ import axios from 'axios'
 import TimerComponent from '../../_components/TimerComponent'
 import { useParams, useRouter } from 'next/navigation'
 import { createClient, LiveTranscriptionEvents } from "@deepgram/sdk"
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 
 const StartInterview = () => {
     const { interviewInfo } = useContext(InterviewContext)
@@ -35,6 +37,71 @@ const StartInterview = () => {
             router.replace(`/interview/${InterviewID}`)
         }
     }, [interviewInfo, InterviewID, router])
+
+    const startTour = () => {
+        const driverObj = driver({
+            showProgress: true,
+            animate: true,
+            confirmClose: false, // Don't ask to close
+            overlayColor: 'red',
+            steps: [
+                {
+                    popover: {
+                        title: 'Ready to ace your interview?',
+                        description: 'Let me guide you through the interface so you can focus on your answers.',
+                        side: "left",
+                        align: 'start'
+                    }
+                },
+                {
+                    element: '#interview-timer',
+                    popover: {
+                        title: 'Timer & Status',
+                        description: 'Keep track of your interview duration here. It also shows if the system is ready.',
+                        side: "bottom",
+                        align: 'start'
+                    }
+                },
+                {
+                    element: '#ai-interviewer',
+                    popover: {
+                        title: 'AI Interviewer',
+                        description: 'This is your AI interviewer. The visualizer reacts when it is speaking.',
+                        side: "right",
+                        align: 'start'
+                    }
+                },
+                {
+                    element: '#candidate-card',
+                    popover: {
+                        title: 'Your Card & Auto-Submit',
+                        description: 'Speak naturally. The system detects when you finish speaking and <strong>automatically submits your answer after 3 seconds of silence</strong>.',
+                        side: "left",
+                        align: 'start'
+                    }
+                },
+                {
+                    element: '#interview-controls',
+                    popover: {
+                        title: 'Controls & Interruption',
+                        description: 'You can <strong>Interrupt</strong> the AI anytime if you want to add more or move to the next question. Click the phone icon to <strong>End the Interview</strong> when you are done.',
+                        side: "top",
+                        align: 'center'
+                    }
+                }
+            ]
+        });
+
+        driverObj.drive();
+    };
+
+    useEffect(() => {
+        // Small delay to ensure elements are rendered
+        const timer = setTimeout(() => {
+            startTour();
+        }, 1000);
+        return () => clearTimeout(timer);
+    }, []);
 
     const startDeepgram = async () => {
         try {
@@ -343,21 +410,32 @@ const StartInterview = () => {
                             <span className="text-white/40 text-sm font-light">/ {interviewInfo?.InterviewData?.JobPosition}</span>
                         )}
                     </div>
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10">
-                        <div className={`w-1.5 h-1.5 rounded-full ${isCallActive ? 'bg-white animate-pulse' : 'bg-white/40'}`} />
-                        <Timer className="w-3.5 h-3.5 text-white/50" />
-                        {isCallActive ? (
-                            <TimerComponent durationInMinutes={parsedDuration} />
-                        ) : (
-                            <span className="text-white/50 text-sm">Ready</span>
-                        )}
+
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={startTour}
+                            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white/50 hover:text-white transition-all flex items-center justify-center"
+                            aria-label="Start Tour"
+                        >
+                            <CircleHelp className="w-5 h-5" />
+                        </button>
+
+                        <div id="interview-timer" className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10">
+                            <div className={`w-1.5 h-1.5 rounded-full ${isCallActive ? 'bg-white animate-pulse' : 'bg-white/40'}`} />
+                            <Timer className="w-3.5 h-3.5 text-white/50" />
+                            {isCallActive ? (
+                                <TimerComponent durationInMinutes={parsedDuration} />
+                            ) : (
+                                <span className="text-white/50 text-sm">Ready</span>
+                            )}
+                        </div>
                     </div>
                 </div>
 
                 {/* Participants */}
                 <div className="flex-1 grid md:grid-cols-2 gap-6 mb-8">
                     {/* AI Card */}
-                    <div className={`relative rounded-2xl p-6 transition-all duration-500 border ${activeSpeaker === 'ai'
+                    <div id="ai-interviewer" className={`relative rounded-2xl p-6 transition-all duration-500 border ${activeSpeaker === 'ai'
                         ? 'bg-white/[0.08] border-white/30'
                         : 'bg-white/[0.02] border-white/10 hover:bg-white/[0.04]'
                         }`}>
@@ -392,7 +470,7 @@ const StartInterview = () => {
                     </div>
 
                     {/* User Card */}
-                    <div className={`relative rounded-2xl p-6 transition-all duration-500 border ${activeSpeaker === 'user'
+                    <div id="candidate-card" className={`relative rounded-2xl p-6 transition-all duration-500 border ${activeSpeaker === 'user'
                         ? 'bg-white/[0.08] border-white/30'
                         : 'bg-white/[0.02] border-white/10 hover:bg-white/[0.04]'
                         }`}>
@@ -430,7 +508,7 @@ const StartInterview = () => {
                 </div>
 
                 {/* Controls */}
-                <div className="flex flex-col items-center gap-4">
+                <div id="interview-controls" className="flex flex-col items-center gap-4">
                     <div className="flex items-center gap-3">
                         {!isCallActive ? (
                             <button
