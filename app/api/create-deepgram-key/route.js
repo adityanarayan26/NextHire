@@ -8,7 +8,7 @@ export async function GET(request) {
     if (!process.env.DEEPGRAM_API_KEY) {
         return NextResponse.json(
             { error: "Deepgram API key is missing in server environment." },
-            { status: 500 }
+            { status: 503 }
         );
     }
 
